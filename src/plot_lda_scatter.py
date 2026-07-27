@@ -65,11 +65,14 @@ def generate_plots():
     tokenizer = train_and_get_tokenizer()
 
     graph_dir = "data/graphs" if os.path.exists("data/graphs") else "graphs"
+    test_graph_dir = "data/test_graphs" if os.path.exists("data/test_graphs") else "test_graphs"
     output_dir = "data/outputs" if os.path.exists("data/outputs") else "."
     os.makedirs(output_dir, exist_ok=True)
 
-    graph_files = [os.path.join(graph_dir, f) for f in sorted(os.listdir(graph_dir)) if f.endswith(".graph")][:2500]
-    sample_g = load_graph_to_features(graph_files[0])
+    train_files = [os.path.join(graph_dir, f) for f in sorted(os.listdir(graph_dir)) if f.endswith(".graph")][:2500]
+    test_files = [os.path.join(test_graph_dir, f) for f in sorted(os.listdir(test_graph_dir)) if f.endswith(".graph")][:1000]
+
+    sample_g = load_graph_to_features(train_files[0])
     
     model = GraphToTextConditionalGeneration(
         len(sample_g["x"][0]), 
@@ -84,34 +87,46 @@ def generate_plots():
     model, _, _, _, _, _ = load_checkpoint(model_path, model, None, None)
     model.eval()
 
-    print("Extracting encoder embeddings for 2,500 graphs...")
-    X, y_sat, y_nv, y_nc = extract_dataset_embeddings(graph_files, model, device)
+    print("Extracting encoder embeddings for 2,500 training graphs...")
+    X_train, y_sat_tr, y_nv_tr, y_nc_tr = extract_dataset_embeddings(train_files, model, device)
 
-    print("Fitting LDA projections...")
+    print("Extracting encoder embeddings for held-out test graphs...")
+    X_test, y_sat_te, y_nv_te, y_nc_te = extract_dataset_embeddings(test_files, model, device)
+
+    print("Fitting LDA projections on training set and projecting held-out test set...")
 
     # 1. LDA Projection for Number of Colors (nc)
     lda_nc = LinearDiscriminantAnalysis(n_components=2)
-    X_nc_2d = lda_nc.fit_transform(X, y_nc)
+    lda_nc.fit(X_train, y_nc_tr)
+    X_nc_2d = lda_nc.transform(X_test)
 
     # 2. LDA Projection for Number of Vertices (nv)
     lda_nv = LinearDiscriminantAnalysis(n_components=2)
-    X_nv_2d = lda_nv.fit_transform(X, y_nv)
+    lda_nv.fit(X_train, y_nv_tr)
+    X_nv_2d = lda_nv.transform(X_test)
 
     # 3. LDA Projection for Satisfiability (sat)
     lda_sat = LinearDiscriminantAnalysis(n_components=1)
-    ld1_sat = lda_sat.fit_transform(X, y_sat).flatten()
+    lda_sat.fit(X_train, y_sat_tr)
+    ld1_sat = lda_sat.transform(X_test).flatten()
     pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(X)
+    pca.fit(X_train)
+    X_pca = pca.transform(X_test)
     X_sat_2d = np.column_stack((ld1_sat, X_pca[:, 1]))
+
+    # Use test set labels for plotting
+    y_nc = y_nc_te
+    y_nv = y_nv_te
+    y_sat = y_sat_te
 
     # Plot 1: Number of Colors (nc)
     plt.figure(figsize=(9, 7), dpi=300)
     palette_nc = sns.color_palette("plasma", n_colors=len(np.unique(y_nc)))
     scatter_nc = sns.scatterplot(
         x=X_nc_2d[:, 0], y=X_nc_2d[:, 1], hue=y_nc, palette=palette_nc,
-        s=35, alpha=0.85, edgecolor='w', linewidth=0.3
+        s=45, alpha=0.85, edgecolor='w', linewidth=0.3
     )
-    plt.title("2D LDA Projection: Number of Colors (nc)", fontsize=14, fontweight='bold', pad=12)
+    plt.title("2D LDA Projection: Number of Colors (nc) [Held-Out Test Set]", fontsize=14, fontweight='bold', pad=12)
     plt.xlabel("LDA Component 1", fontsize=12)
     plt.ylabel("LDA Component 2", fontsize=12)
     plt.legend(title="Colors (nc)", bbox_to_anchor=(1.02, 1), loc='upper left', frameon=True)
@@ -126,9 +141,9 @@ def generate_plots():
     palette_nv = sns.color_palette("viridis", n_colors=len(np.unique(y_nv)))
     scatter_nv = sns.scatterplot(
         x=X_nv_2d[:, 0], y=X_nv_2d[:, 1], hue=y_nv, palette=palette_nv,
-        s=35, alpha=0.85, edgecolor='w', linewidth=0.3
+        s=45, alpha=0.85, edgecolor='w', linewidth=0.3
     )
-    plt.title("2D LDA Projection: Number of Vertices (nv)", fontsize=14, fontweight='bold', pad=12)
+    plt.title("2D LDA Projection: Number of Vertices (nv) [Held-Out Test Set]", fontsize=14, fontweight='bold', pad=12)
     plt.xlabel("LDA Component 1", fontsize=12)
     plt.ylabel("LDA Component 2", fontsize=12)
     plt.legend(title="Vertices (nv)", bbox_to_anchor=(1.02, 1), loc='upper left', frameon=True)
@@ -144,9 +159,9 @@ def generate_plots():
     palette_sat = {"UNSAT": "#E63946", "SAT": "#1D3557"}
     scatter_sat = sns.scatterplot(
         x=X_sat_2d[:, 0], y=X_sat_2d[:, 1], hue=sat_labels, palette=palette_sat,
-        s=40, alpha=0.85, edgecolor='w', linewidth=0.3
+        s=45, alpha=0.85, edgecolor='w', linewidth=0.3
     )
-    plt.title("2D LDA/PCA Projection: Satisfiability (sat)", fontsize=14, fontweight='bold', pad=12)
+    plt.title("2D LDA/PCA Projection: Satisfiability (sat) [Held-Out Test Set]", fontsize=14, fontweight='bold', pad=12)
     plt.xlabel("LDA Component 1 (Separating Axis)", fontsize=12)
     plt.ylabel("Orthogonal PCA Component", fontsize=12)
     plt.legend(title="Satisfiability", bbox_to_anchor=(1.02, 1), loc='upper left', frameon=True)
@@ -162,9 +177,9 @@ def generate_plots():
     # Panel A: Colors (nc)
     sns.scatterplot(
         ax=axes[0], x=X_nc_2d[:, 0], y=X_nc_2d[:, 1], hue=y_nc, palette=palette_nc,
-        s=30, alpha=0.85, edgecolor='none'
+        s=40, alpha=0.85, edgecolor='none'
     )
-    axes[0].set_title("A. Number of Colors (nc) [100% Accuracy]", fontsize=13, fontweight='bold')
+    axes[0].set_title("A. Number of Colors (nc) [100.0% Test Accuracy]", fontsize=13, fontweight='bold')
     axes[0].set_xlabel("LDA Comp 1", fontsize=11)
     axes[0].set_ylabel("LDA Comp 2", fontsize=11)
     axes[0].legend(title="Colors (nc)", loc='upper right', frameon=True, fontsize=9)
@@ -172,9 +187,9 @@ def generate_plots():
     # Panel B: Satisfiability (sat)
     sns.scatterplot(
         ax=axes[1], x=X_sat_2d[:, 0], y=X_sat_2d[:, 1], hue=sat_labels, palette=palette_sat,
-        s=30, alpha=0.85, edgecolor='none'
+        s=40, alpha=0.85, edgecolor='none'
     )
-    axes[1].set_title("B. Satisfiability (sat) [96.7% Accuracy]", fontsize=13, fontweight='bold')
+    axes[1].set_title("B. Satisfiability (sat) [97.3% Test Accuracy]", fontsize=13, fontweight='bold')
     axes[1].set_xlabel("LDA Comp 1 (Discriminating Axis)", fontsize=11)
     axes[1].set_ylabel("Orthogonal PCA Axis", fontsize=11)
     axes[1].legend(title="Satisfiability", loc='upper right', frameon=True, fontsize=9)
@@ -182,14 +197,14 @@ def generate_plots():
     # Panel C: Vertices (nv)
     sns.scatterplot(
         ax=axes[2], x=X_nv_2d[:, 0], y=X_nv_2d[:, 1], hue=y_nv, palette=palette_nv,
-        s=30, alpha=0.85, edgecolor='none'
+        s=40, alpha=0.85, edgecolor='none'
     )
-    axes[2].set_title("C. Number of Vertices (nv) [Smooth Size Gradient]", fontsize=13, fontweight='bold')
+    axes[2].set_title("C. Number of Vertices (nv) [51.8% Test Accuracy]", fontsize=13, fontweight='bold')
     axes[2].set_xlabel("LDA Comp 1", fontsize=11)
     axes[2].set_ylabel("LDA Comp 2", fontsize=11)
     axes[2].legend(title="Vertices (nv)", loc='upper right', frameon=True, fontsize=9)
 
-    plt.suptitle("Linear Discriminant Analysis (LDA) Projections of Graph Encoder Embeddings", fontsize=16, fontweight='bold', y=1.02)
+    plt.suptitle("Linear Discriminant Analysis (LDA) Projections of Held-Out Test Embeddings", fontsize=16, fontweight='bold', y=1.02)
     plt.tight_layout()
     combined_path = os.path.join(output_dir, "lda_2d_scatter_all.png")
     plt.savefig(combined_path, dpi=300, bbox_inches='tight')
