@@ -8,7 +8,8 @@ from torch_geometric.data import Data
 def generate_text_from_graph(model, tokenizer, graph1, graph2=None, max_new_tokens=50, device="cuda"):
     """
     Given two PyG graphs (or a single graph if graph2 is None), encodes them,
-    computes the mean of the graph encoder embeddings, and generates text output.
+    combines their node encoder embeddings (which acts as random node-level feature noise perturbation
+    because node ordering across different graphs is arbitrary and unaligned), and generates text output.
     """
     model.eval()
     model.to(device)
@@ -21,7 +22,7 @@ def generate_text_from_graph(model, tokenizer, graph1, graph2=None, max_new_toke
     
     node_features1 = model.graph_encoder(graph1) # Shape: [num_nodes_1, hidden_dim]
     
-    # 2. Extract features for graph2 if provided and compute the mean embedding
+    # 2. Extract features for graph2 if provided and combine node embeddings (acting as node feature noise)
     if graph2 is not None:
         graph2 = graph2.to(device)
         if not hasattr(graph2, 'batch') or graph2.batch is None:

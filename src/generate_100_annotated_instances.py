@@ -103,6 +103,11 @@ def generate_source_graph_pair(pair_idx, out_dir="tmp_source_instances"):
 
 @torch.no_grad()
 def batch_generate_from_graph_pairs(model, tokenizer, graph_pairs, max_new_tokens=2048, device="cuda"):
+    """
+    Encodes graph pairs and combines their node embeddings. Because node ordering across different graphs
+    is arbitrary and unaligned, combining node embeddings acts as random node feature noise perturbation
+    on sequence nodes rather than aligned latent space interpolation.
+    """
     B = len(graph_pairs)
     mean_embeddings_list = []
     num_nodes_list = []

@@ -11,7 +11,7 @@ Key findings include:
 - **100% Linear Separability for Color Counts (`nc`)**: Graph encoder embeddings linearly separate all 7 color count classes with 100% precision on in-distribution and fresh holdout test sets.
 - **High Separability for Satisfiability (`sat`)**: The GNN encoder retains strong linear separability for instance satisfiability (**96.68%** in-distribution test accuracy, **96.35%** fresh sample test accuracy).
 - **Smooth Monotonic Extrapolation**: On out-of-distribution (OOD) graphs with unseen color bounds ($nc \in [17, 25]$ vs training $nc \le 15$), linear probes exhibit near-perfect monotonic rank correlation (**Spearman $\rho = 0.9677$**).
-- **Dual-Graph Generation Baseline Alignment**: Dual-graph mean embedding inference yields generated instances with **84.0% SAT rate**, mean $nc = 10.19$, and mean $nv = 15.74$.
+- **Dual-Graph Generation Under Node Feature Noise**: Because node ordering is arbitrary and unaligned across different graphs, averaging node embeddings across graph pairs acts as random node-level noise perturbation. Decoding these perturbed embeddings yields valid, **100% unique instances** matching baseline SAT rate (**84.0%** vs 81.1%), mean $nc = 10.19$, and mean $nv = 15.74$.
 
 ---
 
@@ -100,7 +100,7 @@ When tested on graphs strictly larger and denser than any seen during model trai
 
 ## 4. 2D LDA Dimensionality Reduction Visualizations
 
-![3-Panel LDA Projections](lda_2d_scatter_all.png)
+![3-Panel LDA Projections](data/outputs/lda_2d_scatter_all.png)
 
 ---
 
@@ -127,4 +127,4 @@ Each generated instance features an annotated top header comment:
 
 ## Conclusion
 
-The Graph Encoder in `final_model_80m.pt` constructs high-dimensional latent representations that capture problem color bounds ($100\%$ LDA accuracy) and satisfiability ($96.68\%$ LDA accuracy, vastly outperforming the $50\%$ balanced accuracy of the majority baseline). Dual-graph mean embedding decoding allows smooth continuous interpolation across structural bounds and constraint satisfiability.
+The Graph Encoder in `final_model_80m.pt` constructs high-dimensional latent representations that capture problem color bounds ($100\%$ LDA accuracy) and satisfiability ($97.34\%$ held-out test accuracy, vastly outperforming the $83.72\%$ majority baseline). Because node ordering across different input graphs is arbitrary and unaligned a priori, combining node embeddings across graph pairs acts as random node-level noise perturbation rather than structured latent interpolation. Nevertheless, the GNN-GPT2 decoder demonstrates high robustness by decoding these perturbed node representations into valid, 100% unique constraint instances that closely align with natural baseline problem distributions.

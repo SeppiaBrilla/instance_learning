@@ -100,40 +100,38 @@ def extract_embeddings_and_labels(graph_dir=None, max_samples=3000):
 
     return X, y_sat, y_nv, y_nc
 
-def evaluate_lda(X, y, target_name):
+def evaluate_lda(X_train, y_train, X_test, y_test, target_name):
     print(f"\n==========================================")
     print(f"  LDA Classification Evaluation: {target_name}")
     print(f"==========================================")
     
-    unique_classes, counts = np.unique(y, return_counts=True)
-    majority_class_acc = np.max(counts) / len(y)
-    print(f"Classes: {unique_classes}")
-    print(f"Class distribution: {dict(zip(unique_classes, counts))}")
-    print(f"Baseline (Majority Class Accuracy): {majority_class_acc * 100:.2f}%")
+    unique_classes, counts = np.unique(y_test, return_counts=True)
+    majority_class_acc = np.max(counts) / len(y_test)
+    print(f"Test set classes: {unique_classes}")
+    print(f"Test set class distribution: {dict(zip(unique_classes, counts))}")
+    print(f"Baseline (Majority Class Accuracy on Test Set): {majority_class_acc * 100:.2f}%")
 
     lda = LinearDiscriminantAnalysis()
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    scores = cross_val_score(lda, X, y, cv=skf, scoring='accuracy')
-    
-    print(f"5-Fold CV Accuracy: {scores.mean() * 100:.2f}% (+/- {scores.std() * 100:.2f}%)")
-
-    # Fit once on train set to show detailed report
-    train_idx, test_idx = next(skf.split(X, y))
-    X_train, X_test = X[train_idx], X[test_idx]
-    y_train, y_test = y[train_idx], y[test_idx]
-    
     lda.fit(X_train, y_train)
     y_pred = lda.predict(X_test)
     
     acc = accuracy_score(y_test, y_pred)
-    print(f"Holdout Test Accuracy: {acc * 100:.2f}%")
+    print(f"Held-out Test Accuracy: {acc * 100:.2f}%")
     print("\nClassification Report:")
     print(classification_report(y_test, y_pred, zero_division=0))
     print("Confusion Matrix:")
     print(confusion_matrix(y_test, y_pred))
 
 if __name__ == "__main__":
-    X, y_sat, y_nv, y_nc = extract_embeddings_and_labels(max_samples=2500)
-    evaluate_lda(X, y_sat, "SATISFIABILITY (sat)")
-    evaluate_lda(X, y_nv, "NUMBER OF VERTICES (nv)")
-    evaluate_lda(X, y_nc, "NUMBER OF COLORS (nc)")
+    train_dir = "data/graphs" if os.path.exists("data/graphs") else "graphs"
+    test_dir = "data/test_graphs" if os.path.exists("data/test_graphs") else "test_graphs"
+
+    print("Extracting training set embeddings...")
+    X_train, y_sat_tr, y_nv_tr, y_nc_tr = extract_embeddings_and_labels(graph_dir=train_dir, max_samples=2500)
+
+    print("\nExtracting held-out in-distribution test set embeddings...")
+    X_test, y_sat_te, y_nv_te, y_nc_te = extract_embeddings_and_labels(graph_dir=test_dir, max_samples=1000)
+
+    evaluate_lda(X_train, y_sat_tr, X_test, y_sat_te, "SATISFIABILITY (sat)")
+    evaluate_lda(X_train, y_nv_tr, X_test, y_nv_te, "NUMBER OF VERTICES (nv)")
+    evaluate_lda(X_train, y_nc_tr, X_test, y_nc_te, "NUMBER OF COLORS (nc)")

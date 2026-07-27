@@ -9,6 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.linear_model import Ridge
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, mean_absolute_error, r2_score
+from scipy.stats import spearmanr
 
 # Ensure minizinc binary is in PATH
 os.environ['PATH'] = '/work/minizinc_bundle/bin:' + os.environ.get('PATH', '')
@@ -197,8 +198,10 @@ def main():
     y_pred_nv_reg = reg_nv.predict(X_ood)
     mae_nv = mean_absolute_error(y_nv_ood, y_pred_nv_reg)
     r2_nv = r2_score(y_nv_ood, y_pred_nv_reg)
+    rho_nv, pval_nv = spearmanr(y_nv_ood, y_pred_nv_reg)
     print(f"Linear Probe Extrapolation MAE: {mae_nv:.2f} vertices")
     print(f"Linear Probe Extrapolation R^2 Score: {r2_nv:.2f}")
+    print(f"Linear Probe Extrapolation Spearman Rank Correlation (rho): {rho_nv:.4f} (p={pval_nv:.4e})")
 
     print("\nSample Extrapolation Predictions vs Ground Truth (nv):")
     for i in range(min(10, len(y_nv_ood))):
@@ -214,8 +217,10 @@ def main():
     y_pred_nc_reg = reg_nc.predict(X_ood)
     mae_nc = mean_absolute_error(y_nc_ood, y_pred_nc_reg)
     r2_nc = r2_score(y_nc_ood, y_pred_nc_reg)
+    rho_nc, pval_nc = spearmanr(y_nc_ood, y_pred_nc_reg)
     print(f"Linear Probe Extrapolation MAE: {mae_nc:.2f} colors")
     print(f"Linear Probe Extrapolation R^2 Score: {r2_nc:.2f}")
+    print(f"Linear Probe Extrapolation Spearman Rank Correlation (rho): {rho_nc:.4f} (p={pval_nc:.4e})")
 
     print("\nSample Extrapolation Predictions vs Ground Truth (nc):")
     for i in range(min(10, len(y_nc_ood))):
