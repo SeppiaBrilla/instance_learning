@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlatZinc Generative Explorer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-card: #0a0a0a;
+            --bg-card-alt: #111111;
+            --border: 1px solid #222222;
+            --border-light: 1px solid #333333;
+            --border-active: 1px solid #ffffff;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --sat-color: #ffffff;
+            --unsat-color: #555555;
+            --target-color: #ffd700;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: var(--bg-primary);
+            border-bottom: var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Domain Switcher */
+        .domain-selector {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-primary);
+        }
+
+        .btn-domain {
+            padding: 0.45rem 1rem;
+            background: transparent;
+            border: var(--border-light);
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-domain:hover {
+            color: #ffffff;
+            border-color: #666666;
+        }
+
+        .btn-domain.active {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+        }
+
+        /* Main Grid */
+        main {
+            padding: 1.5rem 2rem;
+            max-width: 1700px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1100px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--bg-card);
+            border: var(--border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: var(--border);
+            padding-bottom: 0.85rem;
+        }
+
+        .panel-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Chart Canvas Container */
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            background: #050505;
+            border: var(--border);
+            padding: 0.75rem;
+        }
+
+        /* Legend */
+        .legend-box {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border: 1px solid #ffffff;
+        }
+
+        .dot-sat {
+            background-color: rgb(28, 106, 27);
+        }
+
+        .dot-unsat {
+            background-color: rgb(241, 9, 9);
+            border-color: #666666;
+        }
+
+        .dot-target {
+            background-color: var(--target-color);
+            border-color: var(--target-color);
+        }
+
+        /* Controls */
+        .control-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            background: var(--bg-card-alt);
+            padding: 1rem;
+            border: var(--border);
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .control-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #333333;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+            border: 1px solid #ffffff;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-action {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #ffffff;
+            padding: 0.85rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #222222;
+            color: #888888;
+            border-color: #333333;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: var(--border-light);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        /* Meta Cards */
+        .meta-card {
+            background: var(--bg-card-alt);
+            border: var(--border);
+            padding: 0.85rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .meta-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .meta-stat-title {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .meta-stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .sat-tag {
+            display: inline-block;
+            padding: 0.15rem 0.45rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            border: var(--border-light);
+        }
+
+        .sat-tag.sat-true {
+            background: #ffffff;
+            color: rgba(28, 106, 27, 1);
+            border-color: rgba(28, 106, 27, 1);
+        }
+
+        .sat-tag.sat-false {
+            background: #ffffff;
+            color: rgba(241, 9, 9, 1);
+            border-color: rgba(241, 9, 9, 1);
+        }
+
+        /* Code Viewer */
+        .editor-container {
+            position: relative;
+            background: #000000;
+            border: var(--border);
+            overflow: hidden;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.85rem;
+            background: var(--bg-card-alt);
+            border-bottom: var(--border);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .editor-content {
+            padding: 0.85rem;
+            max-height: 380px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #cccccc;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Terminal Window */
+        .terminal-container {
+            background: #000000;
+            border: var(--border);
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.85rem;
+            background: var(--bg-card-alt);
+            border-bottom: var(--border);
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .terminal-body {
+            padding: 0.85rem;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #e0e0e0;
+        }
+
+        .terminal-prompt {
+            color: var(--text-muted);
+            margin-right: 6px;
+        }
+
+        /* Simple CSS Spinner */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #666666;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="brand">
+            <div class="brand-title">FlatZinc Generative Explorer</div>
+            <div class="brand-subtitle">Graph Node Perturbation & FlatZinc Generator</div>
+        </div>
+        <div class="domain-selector">
+            <button id="btnDomainColoring" class="btn-domain active" onclick="switchDomain('coloring')">Graph
+                Coloring</button>
+            <button id="btnDomainKnapsack" class="btn-domain" onclick="switchDomain('knapsack')">Knapsack</button>
+            <button id="btnDomainTsp" class="btn-domain" onclick="switchDomain('tsp')">TSP</button>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main>
+
+        <!-- Left Panel: Interactive SAT/UNSAT Graph & Controls -->
+        <section class="panel">
+            <!-- Panel Header -->
+            <div class="panel-header">
+                <div class="panel-title">2D Projection: Satisfiability (sat)</div>
+                <div class="legend-box">
+                    <div class="legend-item">
+                        <div class="legend-dot dot-sat"></div>
+                        <span>SAT</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot dot-unsat"></div>
+                        <span>UNSAT</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot dot-target"></div>
+                        <span>Target</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scatter Plot Canvas -->
+            <div class="chart-wrapper">
+                <canvas id="instanceChart"></canvas>
+            </div>
+
+            <!-- Control Parameters Panel -->
+            <div class="control-group">
+                <div class="control-item">
+                    <div class="control-label">
+                        <span>Noise Scale (σ)</span>
+                        <span class="control-value" id="noiseVal">0.15</span>
+                    </div>
+                    <input type="range" id="noiseSlider" min="0.01" max="0.50" step="0.01" value="0.15">
+                </div>
+
+                <div class="control-item">
+                    <div class="control-label">
+                        <span>Target Coordinates</span>
+                    </div>
+                    <div
+                        style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: #fff; margin-top: 2px;">
+                        LDA_X = <span id="targetX">0.00</span>, PCA_Y = <span id="targetY">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nearest Instance Info Card -->
+            <div class="meta-card" id="sourceMetaCard">
+                <div class="meta-stat">
+                    <span class="meta-stat-title">Closest Source</span>
+                    <span class="meta-stat-value" id="srcFilename">instance_0</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title" id="lblSrcNV">Vertices (NV)</span>
+                    <span class="meta-stat-value" id="srcNV">15</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title" id="lblSrcNC">Colors (NC)</span>
+                    <span class="meta-stat-value" id="srcNC">8</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title">Status</span>
+                    <span id="srcSAT"><span class="sat-tag sat-true">SAT</span></span>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="btn-action" id="btnGenerate">
+                <span>Generate Instance with Noise Perturbation</span>
+            </button>
+        </section>
+
+        <!-- Right Panel: Generated FlatZinc Code & MiniZinc Execution -->
+        <section class="panel">
+            <div class="panel-header">
+                <div class="panel-title">Generated FlatZinc Instance</div>
+                <div id="genStatusBadge"
+                    style="font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; color: var(--text-secondary);">
+                    Click graph point to generate
+                </div>
+            </div>
+
+            <!-- Generated Instance Stats Card -->
+            <div class="meta-card">
+                <div class="meta-stat">
+                    <span class="meta-stat-title" id="lblGenNV">Generated NV</span>
+                    <span class="meta-stat-value" id="genNV">--</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title" id="lblGenNC">Generated NC</span>
+                    <span class="meta-stat-value" id="genNC">--</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title">Predicted SAT</span>
+                    <span id="genSAT">--</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title">Uniqueness</span>
+                    <span id="genUnique">--</span>
+                </div>
+                <div class="meta-stat">
+                    <span class="meta-stat-title">Gen Time</span>
+                    <span class="meta-stat-value" id="genTime">--</span>
+                </div>
+            </div>
+
+            <!-- Code Editor Container -->
+            <div class="editor-container">
+                <div class="editor-header">
+                    <span>flatzinc_generated_model.fzn</span>
+                    <button id="btnCopy"
+                        style="background: none; border: var(--border-light); color: var(--text-secondary); cursor: pointer; font-size: 0.75rem; padding: 2px 8px; font-family: 'JetBrains Mono', monospace;">
+                        COPY
+                    </button>
+                </div>
+                <div class="editor-content" id="codeContent">% Generated FlatZinc model will appear here after clicking
+                    a point on the left graph.</div>
+            </div>
+
+            <!-- MiniZinc Action Button -->
+            <button class="btn-action btn-secondary" id="btnSolve" disabled>
+                <span>Run Model with MiniZinc Solver</span>
+            </button>
+
+            <!-- MiniZinc Output Terminal Container -->
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <span>MiniZinc Solver Output</span>
+                    <span id="solveTime" style="color: #ffffff; font-family: 'JetBrains Mono', monospace;">0.00s</span>
+                </div>
+                <div class="terminal-body" id="terminalBody">
+                    <span class="terminal-prompt">$ minizinc</span>Ready. Click "Run Model with MiniZinc" to execute
+                    solver on generated instance.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- App JavaScript Logic -->
+    <script>
+        let chartInstance = null;
+        let allInstances = [];
+        let selectedPoint = { x: 0.0, y: 0.0 };
+        let generatedFlatzinc = "";
+
+        // UI Element References
+        const noiseSlider = document.getElementById('noiseSlider');
+        const noiseVal = document.getElementById('noiseVal');
+        const targetX = document.getElementById('targetX');
+        const targetY = document.getElementById('targetY');
+        const srcFilename = document.getElementById('srcFilename');
+        const srcNV = document.getElementById('srcNV');
+        const srcNC = document.getElementById('srcNC');
+        const srcSAT = document.getElementById('srcSAT');
+
+        const btnGenerate = document.getElementById('btnGenerate');
+        const btnSolve = document.getElementById('btnSolve');
+        const btnCopy = document.getElementById('btnCopy');
+
+        const genNV = document.getElementById('genNV');
+        const genNC = document.getElementById('genNC');
+        const genSAT = document.getElementById('genSAT');
+        const genUnique = document.getElementById('genUnique');
+        const genTime = document.getElementById('genTime');
+        const genStatusBadge = document.getElementById('genStatusBadge');
+        const codeContent = document.getElementById('codeContent');
+        const terminalBody = document.getElementById('terminalBody');
+        const solveTime = document.getElementById('solveTime');
+
+        // Update noise slider UI
+        noiseSlider.addEventListener('input', (e) => {
+            noiseVal.textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        // Copy button
+        btnCopy.addEventListener('click', () => {
+            if (generatedFlatzinc) {
+                navigator.clipboard.writeText(generatedFlatzinc);
+                btnCopy.textContent = "COPIED";
+                setTimeout(() => {
+                    btnCopy.textContent = "COPY";
+                }, 2000);
+            }
+        });
+
+        // Initialize Chart.js Scatter Plot
+        function initChart(datasetInstances) {
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const satPoints = [];
+            const unsatPoints = [];
+
+            datasetInstances.forEach(item => {
+                const point = { x: item.x, y: item.y, raw: item };
+                if (item.sat) {
+                    satPoints.push(point);
+                } else {
+                    unsatPoints.push(point);
+                }
+            });
+
+            const ctx = document.getElementById('instanceChart').getContext('2d');
+
+            chartInstance = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'SAT Instances',
+                            data: satPoints,
+                            backgroundColor: 'rgba(28, 106, 27, 0.8)',
+                            borderColor: 'rgba(28, 106, 27, 1)',
+                            borderWidth: 1,
+                            pointRadius: 3.5,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'UNSAT Instances',
+                            data: unsatPoints,
+                            backgroundColor: 'rgba(241, 9, 9, 0.8)',
+                            borderColor: 'rgba(241, 9, 9, 1)',
+                            borderWidth: 1,
+                            pointRadius: 3.5,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Target Point',
+                            data: [{ x: selectedPoint.x, y: selectedPoint.y }],
+                            backgroundColor: '#ffd700',
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            pointRadius: 9,
+                            pointStyle: 'crossRot'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements, chart) => {
+                        const canvasPosition = Chart.helpers.getRelativePosition(event, chart);
+                        const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
+                        const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
+
+                        if (dataX !== undefined && dataY !== undefined) {
+                            updateSelectedPoint(dataX, dataY);
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0a0a0a',
+                            titleColor: '#ffffff',
+                            bodyColor: '#cccccc',
+                            borderColor: '#333333',
+                            borderWidth: 1,
+                            padding: 8,
+                            titleFont: { family: 'JetBrains Mono', size: 12 },
+                            bodyFont: { family: 'JetBrains Mono', size: 12 },
+                            callbacks: {
+                                label: (context) => {
+                                    if (context.datasetIndex === 2) return `Target: (${context.parsed.x.toFixed(2)}, ${context.parsed.y.toFixed(2)})`;
+                                    const raw = context.raw.raw;
+                                    return `${raw.filename} | NV: ${raw.nv}, NC: ${raw.nc} | SAT: ${raw.sat}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'LDA Component 1 (Separating Axis)', color: '#888888', font: { family: 'JetBrains Mono', size: 11, weight: 500 } },
+                            grid: { color: '#1a1a1a', borderColor: '#333333' },
+                            ticks: { color: '#888888', font: { family: 'JetBrains Mono', size: 10 } }
+                        },
+                        y: {
+                            title: { display: true, text: 'Orthogonal PCA Component', color: '#888888', font: { family: 'JetBrains Mono', size: 11, weight: 500 } },
+                            grid: { color: '#1a1a1a', borderColor: '#333333' },
+                            ticks: { color: '#888888', font: { family: 'JetBrains Mono', size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            // Initial nearest selection
+            updateSelectedPoint(0.0, 0.0);
+        }
+
+        // Update Target Point & Find Nearest Source Instance
+        function updateSelectedPoint(x, y) {
+            selectedPoint = { x, y };
+            targetX.textContent = x.toFixed(2);
+            targetY.textContent = y.toFixed(2);
+
+            // Update Target Point dataset on chart
+            if (chartInstance) {
+                chartInstance.data.datasets[2].data = [{ x, y }];
+                chartInstance.update('none');
+            }
+
+            // Find closest training instance in LDA/PCA projection space
+            let closest = null;
+            let minDist = Infinity;
+            allInstances.forEach(item => {
+                const dx = item.x - x;
+                const dy = item.y - y;
+                const dist = dx * dx + dy * dy;
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = item;
+                }
+            });
+
+            if (closest) {
+                srcFilename.textContent = closest.filename.replace(".graph", "");
+                srcNV.textContent = closest.nv;
+                srcNC.textContent = closest.nc;
+                if (closest.sat) {
+                    srcSAT.innerHTML = `<span class="sat-tag sat-true">SAT</span>`;
+                } else {
+                    srcSAT.innerHTML = `<span class="sat-tag sat-false">UNSAT</span>`;
+                }
+            }
+        }
+
+        function updateLabels(nvLabel, ncLabel) {
+            const lblSrcNV = document.getElementById('lblSrcNV');
+            const lblSrcNC = document.getElementById('lblSrcNC');
+            const lblGenNV = document.getElementById('lblGenNV');
+            const lblGenNC = document.getElementById('lblGenNC');
+
+            if (lblSrcNV) lblSrcNV.textContent = nvLabel;
+            if (lblSrcNC) lblSrcNC.textContent = ncLabel;
+            if (lblGenNV) lblGenNV.textContent = `Generated ` + nvLabel.split(' ')[0];
+            if (lblGenNC) lblGenNC.textContent = `Generated ` + ncLabel.split(' ')[0];
+        }
+
+        // Switch Domain between Graph Coloring, Knapsack & TSP
+        async function switchDomain(targetDomain) {
+            const btnColoring = document.getElementById('btnDomainColoring');
+            const btnKnapsack = document.getElementById('btnDomainKnapsack');
+            const btnTsp = document.getElementById('btnDomainTsp');
+
+            [btnColoring, btnKnapsack, btnTsp].forEach(b => {
+                if (b) b.classList.remove('active');
+            });
+            if (targetDomain === 'coloring' && btnColoring) btnColoring.classList.add('active');
+            else if (targetDomain === 'knapsack' && btnKnapsack) btnKnapsack.classList.add('active');
+            else if (targetDomain === 'tsp' && btnTsp) btnTsp.classList.add('active');
+
+            genStatusBadge.textContent = `Switching domain model...`;
+            codeContent.textContent = `% Switched domain to ${targetDomain.toUpperCase()}. Click a graph point to generate instance.`;
+            btnSolve.disabled = true;
+            generatedFlatzinc = "";
+
+            try {
+                const res = await fetch('/api/switch_domain', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ domain: targetDomain })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    allInstances = data.instances;
+                    updateLabels(data.nv_label, data.nc_label);
+                    genStatusBadge.textContent = `Click graph point to generate`;
+                    initChart(allInstances);
+                } else {
+                    console.error("Failed to switch domain:", data.error);
+                    genStatusBadge.textContent = "Switch Failed";
+                }
+            } catch (err) {
+                console.error("Error switching domain:", err);
+                genStatusBadge.textContent = "Server Error";
+            }
+        }
+
+        // Load Dataset Instances from Backend
+        async function fetchInstances() {
+            try {
+                const res = await fetch('/api/instances');
+                const data = await res.json();
+                if (data.success) {
+                    allInstances = data.instances;
+                    if (data.nv_label && data.nc_label) {
+                        updateLabels(data.nv_label, data.nc_label);
+                    }
+                    initChart(allInstances);
+                }
+            } catch (err) {
+                console.error("Error fetching dataset instances:", err);
+            }
+        }
+
+        // Generate Instance with Feature Noise
+        btnGenerate.addEventListener('click', async () => {
+            btnGenerate.disabled = true;
+            btnGenerate.innerHTML = `<div class="spinner"></div> <span>Generating...</span>`;
+            genStatusBadge.textContent = `Generating FlatZinc model...`;
+            codeContent.textContent = "% Generating FlatZinc instance with syntax verification...";
+            btnSolve.disabled = true;
+
+            const payload = {
+                x: selectedPoint.x,
+                y: selectedPoint.y,
+                noise_std: parseFloat(noiseSlider.value)
+            };
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    generatedFlatzinc = data.flatzinc_code;
+                    codeContent.textContent = generatedFlatzinc;
+                    genNV.textContent = data.nv_gen;
+                    genNC.textContent = data.nc_gen;
+                    genTime.textContent = `${data.generation_time_sec}s`;
+
+                    if (data.closest_instance) {
+                        srcFilename.textContent = data.closest_instance.filename.replace(".graph", "");
+                        srcNV.textContent = data.closest_instance.nv;
+                        srcNC.textContent = data.closest_instance.nc;
+                        if (data.closest_instance.sat) {
+                            srcSAT.innerHTML = `<span class="sat-tag sat-true">SAT</span>`;
+                        } else {
+                            srcSAT.innerHTML = `<span class="sat-tag sat-false">UNSAT</span>`;
+                        }
+                    }
+
+                    if (data.sat_gen) {
+                        genSAT.innerHTML = `<span class="sat-tag sat-true">SAT</span>`;
+                    } else {
+                        genSAT.innerHTML = `<span class="sat-tag sat-false">UNSAT</span>`;
+                    }
+
+                    if (data.is_unique) {
+                        genUnique.innerHTML = `<span class="sat-tag sat-true">UNIQUE</span>`;
+                    } else {
+                        genUnique.innerHTML = `<span class="sat-tag sat-false" title="Duplicate of ${data.duplicate_file}">DUPLICATE</span>`;
+                    }
+
+                    genStatusBadge.textContent = `Valid Model Produced`;
+                    btnSolve.disabled = false;
+                } else {
+                    codeContent.textContent = `% Error during generation: ${data.error}`;
+                    genStatusBadge.textContent = `Generation Failed`;
+                }
+            } catch (err) {
+                codeContent.textContent = `% Connection error: ${err.message}`;
+                genStatusBadge.textContent = `Server Error`;
+            } finally {
+                btnGenerate.disabled = false;
+                btnGenerate.innerHTML = `<span>Generate Instance with Noise Perturbation</span>`;
+            }
+        });
+
+        // Solve Generated FlatZinc Model with MiniZinc
+        btnSolve.addEventListener('click', async () => {
+            if (!generatedFlatzinc) return;
+
+            btnSolve.disabled = true;
+            btnSolve.innerHTML = `<div class="spinner"></div> <span>Running Solver...</span>`;
+            terminalBody.innerHTML = `<span class="terminal-prompt">$ minizinc</span>Executing solver on generated FlatZinc model...`;
+
+            try {
+                const res = await fetch('/api/solve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ flatzinc_code: generatedFlatzinc })
+                });
+                const data = await res.json();
+
+                solveTime.textContent = `${data.solve_time_sec}s`;
+                const solverName = data.solver_used || 'minizinc';
+
+                let outputText = `<span class="terminal-prompt">$ minizinc --solver ${solverName}</span>Done (${data.solve_time_sec}s)\n`;
+                outputText += `\nStatus: <strong>${data.status}</strong>\n\n`;
+                if (data.stdout) outputText += data.stdout;
+                if (data.stderr) outputText += `\nStderr:\n${data.stderr}`;
+
+                terminalBody.innerHTML = outputText;
+            } catch (err) {
+                terminalBody.innerHTML = `<span class="terminal-prompt">$ minizinc</span>Error executing solver: ${err.message}`;
+            } finally {
+                btnSolve.disabled = false;
+                btnSolve.innerHTML = `<span>Run Model with MiniZinc Solver</span>`;
+            }
+        });
+
+        // Run on Page Load
+        fetchInstances();
+    </script>
+</body>
+
+</html>

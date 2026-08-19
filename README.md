@@ -8,17 +8,21 @@ This repository contains the full source code, datasets, trained model weights, 
 
 ```
 instance_learning/
-├── src/                                # Core Source Code & Executable Scripts
+├── src/                                # Core Source Code & Utilities
 │   ├── models.py                       # GINE Encoder & GPT-2 Decoder Architecture
 │   ├── load_graph.py                   # PyTorch Geometric Graph Loader & Parser
-│   ├── generator.py                    # MiniZinc Graph Generator & FlatZinc Parser
-│   ├── flattening.py                   # FlatZinc AST / String Utilities
+│   ├── helpers.py                      # Consolidated AST, Probing, Generation & Evaluation Helpers
 │   ├── train.py                        # Model Training Loop Script
 │   ├── inference.py                    # Dual-Graph Node Embedding Perturbation Inference
-│   ├── lda_classification.py           # LDA Linear Discriminant Probes & Cross-Validation
-│   ├── plot_lda_scatter.py             # 2D LDA Latent Space Scatter Generator
-│   ├── ood_evaluation.py               # Out-of-Distribution (OOD) Extrapolation Benchmark
-│   └── generate_100_annotated_instances.py # Annotated 100 Instance Generator & Analyzer
+│   └── generators/                     # Domain-specific instance generators
+│       ├── graph_coloring_generator.py # Graph Coloring generator
+│       ├── knapsack_generator.py       # Knapsack generator
+│       └── tsp_generator.py            # TSP generator
+│
+├── web_app/                            # Interactive Flask Web Explorer
+│   ├── app.py                          # Web application backend server
+│   ├── templates/                      # HTML5 interface templates
+│   └── static/                         # Static assets
 │
 ├── data/                               # Datasets & Generated Artifacts
 │   ├── graphs/                         # 10,000 Training Graphs (.graph)
@@ -55,34 +59,35 @@ export PATH="/work/minizinc_bundle/bin:$PATH"
 export PYTHONPATH=src
 ```
 
-### 1. Dual-Graph Node Embedding Combination Inference
-Generate a constraint FlatZinc file by combining node embeddings from two source graphs $G_1$ and $G_2$ *(Note: Because node ordering across different graphs is arbitrary and unaligned a priori, combining node embeddings acts as random node-level noise perturbation rather than structured latent space interpolation)*:
+### 1. Graph Inference & Node Perturbation Generation
+Generate a constraint FlatZinc file from single or dual graph inputs with optional Gaussian node embedding noise:
 ```bash
-python src/inference.py data/graphs/instance_0.graph data/graphs/instance_1.graph
+# Single graph inference (default noise = 0.0)
+python src/inference.py data/graph_coloring_graphs/instance_0.graph
+
+# Single graph with Gaussian noise perturbation (e.g. sigma = 0.15)
+python src/inference.py data/graph_coloring_graphs/instance_0.graph --noise 0.15
+
+# Dual-graph combination inference
+python src/inference.py data/graph_coloring_graphs/instance_0.graph data/graph_coloring_graphs/instance_1.graph
 ```
 
-### 2. LDA Latent Representation Probing
-Evaluate linear separability of GNN encoder representations for $nc$, $nv$, and $sat$:
+### 2. Interactive Web Explorer
+Launch the interactive web application to explore the latent space and generate instances:
 ```bash
-python src/lda_classification.py
+python web_app/app.py
 ```
 
-### 3. Generate 2D Scatter Projections
-Generate 2D visualization scatter plots saved to `data/outputs/`:
-```bash
-python src/plot_lda_scatter.py
-```
-
-### 4. Out-of-Distribution (OOD) Benchmark Evaluation
-Evaluate extrapolation on larger/denser graphs ($nv \in [22..30], nc \in [17..25]$):
-```bash
-python src/ood_evaluation.py
-```
-
-### 5. Generate Annotated Batch (100 Instances)
-Generate 100 unique annotated FlatZinc instances with solver verification & statistical pattern analysis:
-```bash
-python src/generate_100_annotated_instances.py
+### 3. Modular Evaluation and Helper Functions
+All probing, evaluation, and generation functions are accessible via `helpers`:
+```python
+from helpers import (
+    extract_embeddings_and_labels,
+    evaluate_lda,
+    generate_coloring_instance,
+    format_flatzinc_text,
+    parse_fzn_properties,
+)
 ```
 
 ---

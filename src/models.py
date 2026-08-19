@@ -92,12 +92,27 @@ class GraphToTextConditionalGeneration(nn.Module):
         )
         return outputs
 
-def train_and_get_tokenizer(vocab_size=10000) -> Tokenizer:
-    for tokenizer_path in ["models/tokenizer", "./tokenizer", "../models/tokenizer"]:
-        if os.path.exists(tokenizer_path):
-            return Tokenizer.from_file(tokenizer_path)
+def train_and_get_tokenizer(vocab_size=10000, corpus_folders=None, tokenizer_path="./tokenizer", force_retrain=False) -> Tokenizer:
+    if os.path.exists(tokenizer_path) and not force_retrain:
+        return Tokenizer.from_file(tokenizer_path)
 
-    # Fallback initialization if tokenizer does not exist
+    if corpus_folders is None:
+        corpus_folders = ["data/graph_coloring_flat", "data/knapsack_flat", "data/tsp_flat"]
+
+    training_files = []
+    for folder in corpus_folders:
+        actual_folder = folder
+        if not os.path.exists(actual_folder) and os.path.exists(os.path.join("data", folder)):
+            actual_folder = os.path.join("data", folder)
+        if os.path.exists(actual_folder):
+            for file in os.listdir(actual_folder):
+                if file.endswith(".fzn"):
+                    training_files.append(os.path.join(actual_folder, file))
+
+    if not training_files:
+        raise ValueError(f"No .fzn files found in corpus folders: {corpus_folders}")
+
+    # Initialize a BPE tokenizer
     tokenizer = Tokenizer(BPE(unk_token="[UNK]"))
     tokenizer.pre_tokenizer = Whitespace()
 
@@ -105,10 +120,6 @@ def train_and_get_tokenizer(vocab_size=10000) -> Tokenizer:
         vocab_size=vocab_size, 
         special_tokens=["[PAD]", "[UNK]", "[BOS]", "[EOS]"], 
     )
-    corpus_folder = "data/flat/" if os.path.exists("data/flat") else "flat/"
-    tokenizer.train([os.path.join(corpus_folder, file) for file in os.listdir(corpus_folder)], trainer)
-    save_path = "models/tokenizer" if os.path.exists("models") else "tokenizer"
-    tokenizer.save(save_path)
+    tokenizer.train(training_files, trainer)
+    tokenizer.save(tokenizer_path)
     return tokenizer
-
-

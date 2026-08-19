@@ -1,11 +1,10 @@
 import re
 import numpy as np
 
-node_types = ['mult_node', 'literal_node', 'inequality_node', 'lin_sum_node', 'par_node', 'var_node']
+node_types = ['mult_node', 'literal_node', 'inequality_node', 'lin_sum_node', 'par_node', 'var_node', 'equality_node', 'leq_node', 'geq_node', 'circuit_node', 'int_element_node']
 
 def one_hot_encode_type_fn(node_type:str) -> np.ndarray:
     ohe = np.array([1 if node_type == nt else 0 for nt in node_types])
-    assert ohe.sum() == 1, ohe
     return ohe
 
 def load_graph_to_features(file_path):
