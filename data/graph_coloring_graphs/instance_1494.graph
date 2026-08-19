@@ -1,0 +1,75 @@
+%nc: 7, nv: 12, sat: true
+nodes:
+0: 1 -- par_node -- 1 -- int
+1: -1 -- par_node -- -1 -- int
+2: X_INTRODUCED_1_ -- var_node -- 1..7 -- int
+3: X_INTRODUCED_2_ -- var_node -- 1..7 -- int
+4: 0 -- literal_node -- 0 -- int
+5: 1*X_INTRODUCED_1_ -- mult_node
+6: -1*X_INTRODUCED_2_ -- mult_node
+7: sum(1*X_INTRODUCED_1_, -1*X_INTRODUCED_2_) -- lin_sum_node
+8: sum(1*X_INTRODUCED_1_, -1*X_INTRODUCED_2_)=0 -- inequality_node
+9: X_INTRODUCED_4_ -- var_node -- 1..7 -- int
+10: X_INTRODUCED_5_ -- var_node -- 1..7 -- int
+11: 1*X_INTRODUCED_4_ -- mult_node
+12: -1*X_INTRODUCED_5_ -- mult_node
+13: sum(1*X_INTRODUCED_4_, -1*X_INTRODUCED_5_) -- lin_sum_node
+14: sum(1*X_INTRODUCED_4_, -1*X_INTRODUCED_5_)=0 -- inequality_node
+15: X_INTRODUCED_6_ -- var_node -- 1..7 -- int
+16: 1*X_INTRODUCED_5_ -- mult_node
+17: -1*X_INTRODUCED_6_ -- mult_node
+18: sum(1*X_INTRODUCED_5_, -1*X_INTRODUCED_6_) -- lin_sum_node
+19: sum(1*X_INTRODUCED_5_, -1*X_INTRODUCED_6_)=0 -- inequality_node
+20: X_INTRODUCED_7_ -- var_node -- 1..7 -- int
+21: X_INTRODUCED_10_ -- var_node -- 1..7 -- int
+22: 1*X_INTRODUCED_7_ -- mult_node
+23: -1*X_INTRODUCED_10_ -- mult_node
+24: sum(1*X_INTRODUCED_7_, -1*X_INTRODUCED_10_) -- lin_sum_node
+25: sum(1*X_INTRODUCED_7_, -1*X_INTRODUCED_10_)=0 -- inequality_node
+26: X_INTRODUCED_8_ -- var_node -- 1..7 -- int
+27: X_INTRODUCED_9_ -- var_node -- 1..7 -- int
+28: 1*X_INTRODUCED_8_ -- mult_node
+29: -1*X_INTRODUCED_9_ -- mult_node
+30: sum(1*X_INTRODUCED_8_, -1*X_INTRODUCED_9_) -- lin_sum_node
+31: sum(1*X_INTRODUCED_8_, -1*X_INTRODUCED_9_)=0 -- inequality_node
+edges:
+0: 0--5--0
+1: 2--5--0
+2: 1--6--0
+3: 3--6--0
+4: 5--7--0
+5: 6--7--0
+6: 4--8--0
+7: 7--8--0
+8: 0--11--0
+9: 9--11--0
+10: 1--12--0
+11: 10--12--0
+12: 11--13--0
+13: 12--13--0
+14: 4--14--0
+15: 13--14--0
+16: 0--16--0
+17: 10--16--0
+18: 1--17--0
+19: 15--17--0
+20: 16--18--0
+21: 17--18--0
+22: 4--19--0
+23: 18--19--0
+24: 0--22--0
+25: 20--22--0
+26: 1--23--0
+27: 21--23--0
+28: 22--24--0
+29: 23--24--0
+30: 4--25--0
+31: 24--25--0
+32: 0--28--0
+33: 26--28--0
+34: 1--29--0
+35: 27--29--0
+36: 28--30--0
+37: 29--30--0
+38: 4--31--0
+39: 30--31--0
