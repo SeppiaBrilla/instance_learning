@@ -1,0 +1,226 @@
+%capacity: 80, profit: [12, 19, 11, 19, 4, 3, 1, 3, 11, 14, 10, 11, 5, 3, 6, 1, 9, 3, 17, 8], size: [16, 16, 8, 6, 27, 10, 8, 3, 20, 17, 27, 17, 26, 6, 25, 11, 2, 26, 23, 30], desired_profit: 94, sat: false
+nodes:
+0: 16 -- par_node -- 16 -- int
+1: 8 -- par_node -- 8 -- int
+2: 6 -- par_node -- 6 -- int
+3: 27 -- par_node -- 27 -- int
+4: 10 -- par_node -- 10 -- int
+5: 3 -- par_node -- 3 -- int
+6: 20 -- par_node -- 20 -- int
+7: 17 -- par_node -- 17 -- int
+8: 26 -- par_node -- 26 -- int
+9: 25 -- par_node -- 25 -- int
+10: 11 -- par_node -- 11 -- int
+11: 2 -- par_node -- 2 -- int
+12: 23 -- par_node -- 23 -- int
+13: 30 -- par_node -- 30 -- int
+14: X_INTRODUCED_0_ -- var_node -- 0..1 -- int
+15: X_INTRODUCED_1_ -- var_node -- 0..1 -- int
+16: X_INTRODUCED_2_ -- var_node -- 0..1 -- int
+17: X_INTRODUCED_3_ -- var_node -- 0..1 -- int
+18: X_INTRODUCED_4_ -- var_node -- 0..1 -- int
+19: X_INTRODUCED_5_ -- var_node -- 0..1 -- int
+20: X_INTRODUCED_6_ -- var_node -- 0..1 -- int
+21: X_INTRODUCED_7_ -- var_node -- 0..1 -- int
+22: X_INTRODUCED_8_ -- var_node -- 0..1 -- int
+23: X_INTRODUCED_9_ -- var_node -- 0..1 -- int
+24: X_INTRODUCED_10_ -- var_node -- 0..1 -- int
+25: X_INTRODUCED_11_ -- var_node -- 0..1 -- int
+26: X_INTRODUCED_12_ -- var_node -- 0..1 -- int
+27: X_INTRODUCED_13_ -- var_node -- 0..1 -- int
+28: X_INTRODUCED_14_ -- var_node -- 0..1 -- int
+29: X_INTRODUCED_15_ -- var_node -- 0..1 -- int
+30: X_INTRODUCED_16_ -- var_node -- 0..1 -- int
+31: X_INTRODUCED_17_ -- var_node -- 0..1 -- int
+32: X_INTRODUCED_18_ -- var_node -- 0..1 -- int
+33: X_INTRODUCED_19_ -- var_node -- 0..1 -- int
+34: 80 -- literal_node -- 80 -- int
+35: 16*X_INTRODUCED_0_ -- mult_node
+36: 16*X_INTRODUCED_1_ -- mult_node
+37: 8*X_INTRODUCED_2_ -- mult_node
+38: 6*X_INTRODUCED_3_ -- mult_node
+39: 27*X_INTRODUCED_4_ -- mult_node
+40: 10*X_INTRODUCED_5_ -- mult_node
+41: 8*X_INTRODUCED_6_ -- mult_node
+42: 3*X_INTRODUCED_7_ -- mult_node
+43: 20*X_INTRODUCED_8_ -- mult_node
+44: 17*X_INTRODUCED_9_ -- mult_node
+45: 27*X_INTRODUCED_10_ -- mult_node
+46: 17*X_INTRODUCED_11_ -- mult_node
+47: 26*X_INTRODUCED_12_ -- mult_node
+48: 6*X_INTRODUCED_13_ -- mult_node
+49: 25*X_INTRODUCED_14_ -- mult_node
+50: 11*X_INTRODUCED_15_ -- mult_node
+51: 2*X_INTRODUCED_16_ -- mult_node
+52: 26*X_INTRODUCED_17_ -- mult_node
+53: 23*X_INTRODUCED_18_ -- mult_node
+54: 30*X_INTRODUCED_19_ -- mult_node
+55: sum(16*X_INTRODUCED_0_, 16*X_INTRODUCED_1_, 8*X_INTRODUCED_2_, 6*X_INTRODUCED_3_, 27*X_INTRODUCED_4_, 10*X_INTRODUCED_5_, 8*X_INTRODUCED_6_, 3*X_INTRODUCED_7_, 20*X_INTRODUCED_8_, 17*X_INTRODUCED_9_, 27*X_INTRODUCED_10_, 17*X_INTRODUCED_11_, 26*X_INTRODUCED_12_, 6*X_INTRODUCED_13_, 25*X_INTRODUCED_14_, 11*X_INTRODUCED_15_, 2*X_INTRODUCED_16_, 26*X_INTRODUCED_17_, 23*X_INTRODUCED_18_, 30*X_INTRODUCED_19_) -- lin_sum_node
+56: sum(16*X_INTRODUCED_0_, 16*X_INTRODUCED_1_, 8*X_INTRODUCED_2_, 6*X_INTRODUCED_3_, 27*X_INTRODUCED_4_, 10*X_INTRODUCED_5_, 8*X_INTRODUCED_6_, 3*X_INTRODUCED_7_, 20*X_INTRODUCED_8_, 17*X_INTRODUCED_9_, 27*X_INTRODUCED_10_, 17*X_INTRODUCED_11_, 26*X_INTRODUCED_12_, 6*X_INTRODUCED_13_, 25*X_INTRODUCED_14_, 11*X_INTRODUCED_15_, 2*X_INTRODUCED_16_, 26*X_INTRODUCED_17_, 23*X_INTRODUCED_18_, 30*X_INTRODUCED_19_)<=80 -- leq_node
+57: 1 -- par_node -- 1 -- int
+58: -12 -- par_node -- -12 -- int
+59: -19 -- par_node -- -19 -- int
+60: -11 -- par_node -- -11 -- int
+61: -4 -- par_node -- -4 -- int
+62: -3 -- par_node -- -3 -- int
+63: -1 -- par_node -- -1 -- int
+64: -14 -- par_node -- -14 -- int
+65: -10 -- par_node -- -10 -- int
+66: -5 -- par_node -- -5 -- int
+67: -6 -- par_node -- -6 -- int
+68: -9 -- par_node -- -9 -- int
+69: -17 -- par_node -- -17 -- int
+70: -8 -- par_node -- -8 -- int
+71: total_profit -- var_node -- 95..170 -- int
+72: 0 -- literal_node -- 0 -- int
+73: 1*total_profit -- mult_node
+74: -12*X_INTRODUCED_0_ -- mult_node
+75: -19*X_INTRODUCED_1_ -- mult_node
+76: -11*X_INTRODUCED_2_ -- mult_node
+77: -19*X_INTRODUCED_3_ -- mult_node
+78: -4*X_INTRODUCED_4_ -- mult_node
+79: -3*X_INTRODUCED_5_ -- mult_node
+80: -1*X_INTRODUCED_6_ -- mult_node
+81: -3*X_INTRODUCED_7_ -- mult_node
+82: -11*X_INTRODUCED_8_ -- mult_node
+83: -14*X_INTRODUCED_9_ -- mult_node
+84: -10*X_INTRODUCED_10_ -- mult_node
+85: -11*X_INTRODUCED_11_ -- mult_node
+86: -5*X_INTRODUCED_12_ -- mult_node
+87: -3*X_INTRODUCED_13_ -- mult_node
+88: -6*X_INTRODUCED_14_ -- mult_node
+89: -1*X_INTRODUCED_15_ -- mult_node
+90: -9*X_INTRODUCED_16_ -- mult_node
+91: -3*X_INTRODUCED_17_ -- mult_node
+92: -17*X_INTRODUCED_18_ -- mult_node
+93: -8*X_INTRODUCED_19_ -- mult_node
+94: sum(1*total_profit, -12*X_INTRODUCED_0_, -19*X_INTRODUCED_1_, -11*X_INTRODUCED_2_, -19*X_INTRODUCED_3_, -4*X_INTRODUCED_4_, -3*X_INTRODUCED_5_, -1*X_INTRODUCED_6_, -3*X_INTRODUCED_7_, -11*X_INTRODUCED_8_, -14*X_INTRODUCED_9_, -10*X_INTRODUCED_10_, -11*X_INTRODUCED_11_, -5*X_INTRODUCED_12_, -3*X_INTRODUCED_13_, -6*X_INTRODUCED_14_, -1*X_INTRODUCED_15_, -9*X_INTRODUCED_16_, -3*X_INTRODUCED_17_, -17*X_INTRODUCED_18_, -8*X_INTRODUCED_19_) -- lin_sum_node
+95: sum(1*total_profit, -12*X_INTRODUCED_0_, -19*X_INTRODUCED_1_, -11*X_INTRODUCED_2_, -19*X_INTRODUCED_3_, -4*X_INTRODUCED_4_, -3*X_INTRODUCED_5_, -1*X_INTRODUCED_6_, -3*X_INTRODUCED_7_, -11*X_INTRODUCED_8_, -14*X_INTRODUCED_9_, -10*X_INTRODUCED_10_, -11*X_INTRODUCED_11_, -5*X_INTRODUCED_12_, -3*X_INTRODUCED_13_, -6*X_INTRODUCED_14_, -1*X_INTRODUCED_15_, -9*X_INTRODUCED_16_, -3*X_INTRODUCED_17_, -17*X_INTRODUCED_18_, -8*X_INTRODUCED_19_)=0 -- equality_node
+edges:
+0: 0--35--0
+1: 14--35--0
+2: 0--36--0
+3: 15--36--0
+4: 1--37--0
+5: 16--37--0
+6: 2--38--0
+7: 17--38--0
+8: 3--39--0
+9: 18--39--0
+10: 4--40--0
+11: 19--40--0
+12: 1--41--0
+13: 20--41--0
+14: 5--42--0
+15: 21--42--0
+16: 6--43--0
+17: 22--43--0
+18: 7--44--0
+19: 23--44--0
+20: 3--45--0
+21: 24--45--0
+22: 7--46--0
+23: 25--46--0
+24: 8--47--0
+25: 26--47--0
+26: 2--48--0
+27: 27--48--0
+28: 9--49--0
+29: 28--49--0
+30: 10--50--0
+31: 29--50--0
+32: 11--51--0
+33: 30--51--0
+34: 8--52--0
+35: 31--52--0
+36: 12--53--0
+37: 32--53--0
+38: 13--54--0
+39: 33--54--0
+40: 35--55--0
+41: 36--55--0
+42: 37--55--0
+43: 38--55--0
+44: 39--55--0
+45: 40--55--0
+46: 41--55--0
+47: 42--55--0
+48: 43--55--0
+49: 44--55--0
+50: 45--55--0
+51: 46--55--0
+52: 47--55--0
+53: 48--55--0
+54: 49--55--0
+55: 50--55--0
+56: 51--55--0
+57: 52--55--0
+58: 53--55--0
+59: 54--55--0
+60: 34--56--1
+61: 55--56--0
+62: 57--73--0
+63: 71--73--0
+64: 58--74--0
+65: 14--74--0
+66: 59--75--0
+67: 15--75--0
+68: 60--76--0
+69: 16--76--0
+70: 59--77--0
+71: 17--77--0
+72: 61--78--0
+73: 18--78--0
+74: 62--79--0
+75: 19--79--0
+76: 63--80--0
+77: 20--80--0
+78: 62--81--0
+79: 21--81--0
+80: 60--82--0
+81: 22--82--0
+82: 64--83--0
+83: 23--83--0
+84: 65--84--0
+85: 24--84--0
+86: 60--85--0
+87: 25--85--0
+88: 66--86--0
+89: 26--86--0
+90: 62--87--0
+91: 27--87--0
+92: 67--88--0
+93: 28--88--0
+94: 63--89--0
+95: 29--89--0
+96: 68--90--0
+97: 30--90--0
+98: 62--91--0
+99: 31--91--0
+100: 69--92--0
+101: 32--92--0
+102: 70--93--0
+103: 33--93--0
+104: 73--94--0
+105: 74--94--0
+106: 75--94--0
+107: 76--94--0
+108: 77--94--0
+109: 78--94--0
+110: 79--94--0
+111: 80--94--0
+112: 81--94--0
+113: 82--94--0
+114: 83--94--0
+115: 84--94--0
+116: 85--94--0
+117: 86--94--0
+118: 87--94--0
+119: 88--94--0
+120: 89--94--0
+121: 90--94--0
+122: 91--94--0
+123: 92--94--0
+124: 93--94--0
+125: 72--95--0
+126: 94--95--0
