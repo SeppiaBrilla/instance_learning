@@ -1,0 +1,113 @@
+%n: 6, min_dist: 4, max_dist: 10, sat: false
+nodes:
+0: 1 -- par_node -- 1 -- int
+1: -1 -- par_node -- -1 -- int
+2: cost -- var_node -- 24..39 -- int
+3: X_INTRODUCED_32_ -- var_node -- 4..9 -- int
+4: X_INTRODUCED_34_ -- var_node -- 4..9 -- int
+5: X_INTRODUCED_36_ -- var_node -- 4..9 -- int
+6: X_INTRODUCED_38_ -- var_node -- 4..8 -- int
+7: X_INTRODUCED_40_ -- var_node -- 4..9 -- int
+8: X_INTRODUCED_42_ -- var_node -- 4..8 -- int
+9: 0 -- literal_node -- 0 -- int
+10: 1*cost -- mult_node
+11: -1*X_INTRODUCED_32_ -- mult_node
+12: -1*X_INTRODUCED_34_ -- mult_node
+13: -1*X_INTRODUCED_36_ -- mult_node
+14: -1*X_INTRODUCED_38_ -- mult_node
+15: -1*X_INTRODUCED_40_ -- mult_node
+16: -1*X_INTRODUCED_42_ -- mult_node
+17: sum(1*cost, -1*X_INTRODUCED_32_, -1*X_INTRODUCED_34_, -1*X_INTRODUCED_36_, -1*X_INTRODUCED_38_, -1*X_INTRODUCED_40_, -1*X_INTRODUCED_42_) -- lin_sum_node
+18: sum(1*cost, -1*X_INTRODUCED_32_, -1*X_INTRODUCED_34_, -1*X_INTRODUCED_36_, -1*X_INTRODUCED_38_, -1*X_INTRODUCED_40_, -1*X_INTRODUCED_42_)=0 -- equality_node
+19: X_INTRODUCED_16_ -- var_node -- 1..6 -- int
+20: 1 -- literal_node -- 1 -- int
+21: int_elementb0cdabd5-9829-11f1-b38f-183d2d5655d4 -- int_element_node
+22: 8 -- literal_node -- 8 -- int
+23: 9 -- literal_node -- 9 -- int
+24: X_INTRODUCED_17_ -- var_node -- 1..6 -- int
+25: int_elementb0ce3989-9829-11f1-9004-183d2d5655d4 -- int_element_node
+26: 6 -- literal_node -- 6 -- int
+27: X_INTRODUCED_18_ -- var_node -- 1..6 -- int
+28: int_elementb0ce3b26-9829-11f1-a4f4-183d2d5655d4 -- int_element_node
+29: 5 -- literal_node -- 5 -- int
+30: 7 -- literal_node -- 7 -- int
+31: X_INTRODUCED_19_ -- var_node -- 1..6 -- int
+32: int_elementb0ce3ca4-9829-11f1-b59c-183d2d5655d4 -- int_element_node
+33: X_INTRODUCED_20_ -- var_node -- 1..6 -- int
+34: int_elementb0ce3ddd-9829-11f1-a9ea-183d2d5655d4 -- int_element_node
+35: X_INTRODUCED_21_ -- var_node -- 1..6 -- int
+36: int_elementb0ce3f1e-9829-11f1-9d8e-183d2d5655d4 -- int_element_node
+37: circuitb0ce4205-9829-11f1-a831-183d2d5655d4 -- circuit_node
+edges:
+0: 20--10--0
+1: 2--10--0
+2: 1--11--0
+3: 3--11--0
+4: 1--12--0
+5: 4--12--0
+6: 1--13--0
+7: 5--13--0
+8: 1--14--0
+9: 6--14--0
+10: 1--15--0
+11: 7--15--0
+12: 1--16--0
+13: 8--16--0
+14: 10--17--0
+15: 11--17--0
+16: 12--17--0
+17: 13--17--0
+18: 14--17--0
+19: 15--17--0
+20: 16--17--0
+21: 9--18--0
+22: 17--18--0
+23: 9--21--2
+24: 22--21--2
+25: 23--21--2
+26: 19--21--2
+27: 20--21--2
+28: 3--21--2
+29: 26--25--2
+30: 9--25--2
+31: 22--25--2
+32: 23--25--2
+33: 24--25--2
+34: 20--25--2
+35: 4--25--2
+36: 9--28--2
+37: 29--28--2
+38: 30--28--2
+39: 23--28--2
+40: 27--28--2
+41: 20--28--2
+42: 5--28--2
+43: 9--32--2
+44: 30--32--2
+45: 29--32--2
+46: 22--32--2
+47: 31--32--2
+48: 20--32--2
+49: 6--32--2
+50: 29--34--2
+51: 22--34--2
+52: 23--34--2
+53: 9--34--2
+54: 30--34--2
+55: 33--34--2
+56: 20--34--2
+57: 7--34--2
+58: 26--36--2
+59: 9--36--2
+60: 30--36--2
+61: 22--36--2
+62: 35--36--2
+63: 20--36--2
+64: 8--36--2
+65: 19--37--2
+66: 24--37--2
+67: 27--37--2
+68: 31--37--2
+69: 33--37--2
+70: 35--37--2
+71: 20--37--2

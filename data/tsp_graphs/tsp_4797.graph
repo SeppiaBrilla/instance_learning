@@ -1,0 +1,155 @@
+%n: 7, min_dist: 4, max_dist: 20, sat: false
+nodes:
+0: 1 -- par_node -- 1 -- int
+1: -1 -- par_node -- -1 -- int
+2: cost -- var_node -- 28..64 -- int
+3: X_INTRODUCED_34_ -- var_node -- 4..18 -- int
+4: X_INTRODUCED_36_ -- var_node -- 4..17 -- int
+5: X_INTRODUCED_38_ -- var_node -- 4..12 -- int
+6: X_INTRODUCED_40_ -- var_node -- 4..19 -- int
+7: X_INTRODUCED_42_ -- var_node -- 4..19 -- int
+8: X_INTRODUCED_44_ -- var_node -- 4..19 -- int
+9: X_INTRODUCED_46_ -- var_node -- 4..19 -- int
+10: 0 -- literal_node -- 0 -- int
+11: 1*cost -- mult_node
+12: -1*X_INTRODUCED_34_ -- mult_node
+13: -1*X_INTRODUCED_36_ -- mult_node
+14: -1*X_INTRODUCED_38_ -- mult_node
+15: -1*X_INTRODUCED_40_ -- mult_node
+16: -1*X_INTRODUCED_42_ -- mult_node
+17: -1*X_INTRODUCED_44_ -- mult_node
+18: -1*X_INTRODUCED_46_ -- mult_node
+19: sum(1*cost, -1*X_INTRODUCED_34_, -1*X_INTRODUCED_36_, -1*X_INTRODUCED_38_, -1*X_INTRODUCED_40_, -1*X_INTRODUCED_42_, -1*X_INTRODUCED_44_, -1*X_INTRODUCED_46_) -- lin_sum_node
+20: sum(1*cost, -1*X_INTRODUCED_34_, -1*X_INTRODUCED_36_, -1*X_INTRODUCED_38_, -1*X_INTRODUCED_40_, -1*X_INTRODUCED_42_, -1*X_INTRODUCED_44_, -1*X_INTRODUCED_46_)=0 -- equality_node
+21: X_INTRODUCED_16_ -- var_node -- 1..7 -- int
+22: 1 -- literal_node -- 1 -- int
+23: int_elementdf42cf07-9828-11f1-ab6d-183d2d5655d4 -- int_element_node
+24: 9 -- literal_node -- 9 -- int
+25: 17 -- literal_node -- 17 -- int
+26: 13 -- literal_node -- 13 -- int
+27: 11 -- literal_node -- 11 -- int
+28: 18 -- literal_node -- 18 -- int
+29: 10 -- literal_node -- 10 -- int
+30: X_INTRODUCED_17_ -- var_node -- 1..7 -- int
+31: int_elementdf439fb0-9828-11f1-bcb2-183d2d5655d4 -- int_element_node
+32: 12 -- literal_node -- 12 -- int
+33: 16 -- literal_node -- 16 -- int
+34: X_INTRODUCED_18_ -- var_node -- 1..7 -- int
+35: int_elementdf43a224-9828-11f1-bdef-183d2d5655d4 -- int_element_node
+36: 6 -- literal_node -- 6 -- int
+37: 8 -- literal_node -- 8 -- int
+38: X_INTRODUCED_19_ -- var_node -- 1..7 -- int
+39: int_elementdf43a3c1-9828-11f1-ae12-183d2d5655d4 -- int_element_node
+40: 19 -- literal_node -- 19 -- int
+41: 15 -- literal_node -- 15 -- int
+42: X_INTRODUCED_20_ -- var_node -- 1..7 -- int
+43: int_elementdf43a599-9828-11f1-bb0c-183d2d5655d4 -- int_element_node
+44: X_INTRODUCED_21_ -- var_node -- 1..7 -- int
+45: int_elementdf43a723-9828-11f1-8482-183d2d5655d4 -- int_element_node
+46: X_INTRODUCED_22_ -- var_node -- 1..7 -- int
+47: int_elementdf43a8ad-9828-11f1-9261-183d2d5655d4 -- int_element_node
+48: circuitdf43aed1-9828-11f1-ba46-183d2d5655d4 -- circuit_node
+edges:
+0: 22--11--0
+1: 2--11--0
+2: 1--12--0
+3: 3--12--0
+4: 1--13--0
+5: 4--13--0
+6: 1--14--0
+7: 5--14--0
+8: 1--15--0
+9: 6--15--0
+10: 1--16--0
+11: 7--16--0
+12: 1--17--0
+13: 8--17--0
+14: 1--18--0
+15: 9--18--0
+16: 11--19--0
+17: 12--19--0
+18: 13--19--0
+19: 14--19--0
+20: 15--19--0
+21: 16--19--0
+22: 17--19--0
+23: 18--19--0
+24: 10--20--0
+25: 19--20--0
+26: 10--23--2
+27: 24--23--2
+28: 25--23--2
+29: 26--23--2
+30: 27--23--2
+31: 28--23--2
+32: 29--23--2
+33: 21--23--2
+34: 22--23--2
+35: 3--23--2
+36: 10--31--2
+37: 24--31--2
+38: 32--31--2
+39: 25--31--2
+40: 26--31--2
+41: 33--31--2
+42: 29--31--2
+43: 30--31--2
+44: 22--31--2
+45: 4--31--2
+46: 10--35--2
+47: 24--35--2
+48: 32--35--2
+49: 36--35--2
+50: 37--35--2
+51: 29--35--2
+52: 34--35--2
+53: 22--35--2
+54: 5--35--2
+55: 10--39--2
+56: 24--39--2
+57: 40--39--2
+58: 26--39--2
+59: 33--39--2
+60: 41--39--2
+61: 37--39--2
+62: 38--39--2
+63: 22--39--2
+64: 6--39--2
+65: 10--43--2
+66: 40--43--2
+67: 36--43--2
+68: 25--43--2
+69: 33--43--2
+70: 41--43--2
+71: 28--43--2
+72: 42--43--2
+73: 22--43--2
+74: 7--43--2
+75: 10--45--2
+76: 40--45--2
+77: 25--45--2
+78: 26--45--2
+79: 36--45--2
+80: 41--45--2
+81: 29--45--2
+82: 44--45--2
+83: 22--45--2
+84: 8--45--2
+85: 10--47--2
+86: 40--47--2
+87: 36--47--2
+88: 27--47--2
+89: 33--47--2
+90: 41--47--2
+91: 29--47--2
+92: 46--47--2
+93: 22--47--2
+94: 9--47--2
+95: 21--48--2
+96: 30--48--2
+97: 34--48--2
+98: 38--48--2
+99: 42--48--2
+100: 44--48--2
+101: 46--48--2
+102: 22--48--2
